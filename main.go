@@ -6,6 +6,7 @@ import (
 	"go-websocket-connection/functions"
 	"log"
 	"net/http"
+	"strconv"
 )
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -46,17 +47,17 @@ func reader(conn *websocket.Conn) {
 			log.Println(err)
 		}
 
-		if string(p) == "oi" {
-			if err := conn.WriteMessage(messageType, []byte("Olá pessoas")); err != nil {
-				log.Println(err)
-				return
-			}
+		indexMessage,err := strconv.Atoi(string(p))
+		if err != nil {
+			fmt.Println("Erro ao converter numero")
 		}
 
-		if err := conn.WriteMessage(messageType, p); err != nil {
+		var message = functions.GetMessage(indexMessage)
+		if err := conn.WriteMessage(messageType, []byte(message)); err != nil {
 			log.Println(err)
 			return
 		}
+
 	}
 }
 
@@ -67,7 +68,6 @@ func setupRoutes()  {
 }
 
 func main() {
-	functions.ChargeBotmaps()
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
 

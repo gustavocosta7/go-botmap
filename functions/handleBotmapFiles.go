@@ -2,14 +2,11 @@ package functions
 
 import (
 	"bufio"
-	"fmt"
+	"go-websocket-connection/domain"
+	"io"
 	"log"
 	"os"
 )
-
-type ReadFiles struct {
-
-}
 
 func check(e error) {
 	if e != nil {
@@ -17,25 +14,42 @@ func check(e error) {
 	}
 }
 
-func ChargeBotmaps()  {
+func ChargeBotmaps()  map[int]domain.BotmapDomain{
 
-	fmt.Println("-----------------")
+	lines := make(map[int]domain.BotmapDomain)
 
-	//
 	f, err := os.Open("./botmaps/index.botmap")
 	defer f.Close()
 
 	check(err)
 
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+	var rd = bufio.NewReader(f)
+	var cont = 0
+
+	for  {
+		line, err := rd.ReadString('\n')
+
+
+		cont = cont + 1
+
+		newLine := processLine(line, cont)
+
+		lines[cont] = newLine
+
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
+	//jsonString, err := json.Marshal(lines)
 
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+	return lines
+}
 
-	fmt.Println("-----------------")
-
+func GetMessage(index int) string {
+	messages := ChargeBotmaps()
+	return messages[index].Content
 }
