@@ -1,4 +1,4 @@
-module github.com/elliotforbes/go-websocket-tutorial
+module go-websocket-connection
 
 go 1.14
 

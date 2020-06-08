@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"go-websocket-connection/functions"
 	"log"
 	"net/http"
 )
@@ -17,8 +18,6 @@ func homePage(w http.ResponseWriter, r *http.Request)  {
 
 func wsEndpoint(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("R: ")
-	log.Println(r)
 
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 
@@ -54,7 +53,6 @@ func reader(conn *websocket.Conn) {
 			}
 		}
 
-
 		if err := conn.WriteMessage(messageType, p); err != nil {
 			log.Println(err)
 			return
@@ -69,7 +67,8 @@ func setupRoutes()  {
 }
 
 func main() {
-	fmt.Println("Hello world")
+	functions.ChargeBotmaps()
 	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }
