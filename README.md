@@ -1,5 +1,6 @@
-GO Botmap with Websocket
+#GO Botmap with Websocket
 
 
 
-References: -
+References: 
+[1] https://tutorialedge.net/golang/go-websocket-tutorial/
