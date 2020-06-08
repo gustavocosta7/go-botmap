@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
 )
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -47,7 +47,13 @@ func reader(conn *websocket.Conn) {
 			log.Println(err)
 		}
 
-		fmt.Println(string(p))
+		if string(p) == "oi" {
+			if err := conn.WriteMessage(messageType, []byte("Olá pessoas")); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+
 
 		if err := conn.WriteMessage(messageType, p); err != nil {
 			log.Println(err)
