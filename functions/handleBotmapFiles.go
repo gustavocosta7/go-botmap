@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"go-websocket-connection/domain"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 func check(e error) {
@@ -15,38 +17,56 @@ func check(e error) {
 }
 
 func ChargeBotmaps()  map[int]domain.BotmapDomain{
-
+	fileNames := GetAllNameFileBotmaps()
 	lines := make(map[int]domain.BotmapDomain)
 
-	f, err := os.Open("./botmaps/index.botmap")
-	defer f.Close()
-
-	check(err)
-
-	var rd = bufio.NewReader(f)
 	var cont = 0
 
-	for  {
-		line, err := rd.ReadString('\n')
+	for _, name := range fileNames{
 
+		f, err := os.Open("./botmaps/" + name)
+		defer f.Close()
 
-		cont = cont + 1
+		check(err)
 
-		newLine := processLine(line, cont)
+		var rd = bufio.NewReader(f)
 
-		lines[cont] = newLine
+		for  {
+			line, err := rd.ReadString('\n')
+			cont = cont + 1
+			newLine := processLine(line, cont)
+			lines[cont] = newLine
 
-		if err == io.EOF {
-			break
+			if err == io.EOF {
+				break
+			}
+			check(err)
 		}
 
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
 	//jsonString, err := json.Marshal(lines)
-
 	return lines
+}
+
+/**
+todo: Deixar diretório dinâmico
+description: Essa função retorna todos os nomes dos arquivos botmap
+ */
+func GetAllNameFileBotmaps() []string {
+	var fileNames []string
+	files, err := ioutil.ReadDir("botmaps")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range files{
+		if strings.Index(f.Name(), ".botmap") > 0 {
+			fileNames = append(fileNames, f.Name())
+		}
+	}
+
+	return fileNames
 }
 
 func GetMessage(index int) string {
